@@ -25,6 +25,9 @@ export default function HomePage() {
   const [screen, setScreen] = useState<Screen>("hero");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const missingValue = (label: string) => `${label} is missing in the form`;
+  const valueOrMissing = (value: string, label: string) => value.trim() || missingValue(label);
+
   /** When the user clicks Yes – celebrate and move to the form */
   const handleYes = useCallback(() => {
     fireHeartConfetti();
@@ -45,16 +48,41 @@ export default function HomePage() {
 
     setIsSubmitting(true);
 
+    const name = valueOrMissing(data.name, "Name");
+    const date = valueOrMissing(data.date, "Date");
+    const time = valueOrMissing(data.time, "Time");
+    const dateType = valueOrMissing(data.dateType, "Date type");
+    const userMessage = valueOrMissing(data.message, "Message");
+    const dateSummary = `${date} at ${time}`;
+    const fullSummary = [
+      `Name: ${name}`,
+      `Date type: ${dateType}`,
+      `Date: ${date}`,
+      `Time: ${time}`,
+      `Message: ${userMessage}`,
+    ].join("\n");
+    const emailParams = {
+      user_name: name,
+      name,
+      date_type: dateType,
+      dateType,
+      preferred_date: date,
+      preferredDate: date,
+      preferred_time: time,
+      preferredTime: time,
+      date_time: dateSummary,
+      dateTime: dateSummary,
+      message: fullSummary,
+      user_message: userMessage,
+      summary: fullSummary,
+      details: fullSummary,
+    };
+
     try {
       await emailjs.send(
         serviceId,
         templateId,
-        {
-          date: data.date,
-          time: data.time,
-          location: data.location,
-          message: data.message || "No message left.",
-        },
+        emailParams,
         { publicKey }
       );
 

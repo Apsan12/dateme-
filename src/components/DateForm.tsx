@@ -11,25 +11,30 @@ interface DateFormProps {
 }
 
 export interface DateFormData {
+  name: string;
   date: string;
   time: string;
-  location: string;
+  dateType: string;
   message: string;
 }
 
 export default function DateForm({ visible, onSubmit, isSubmitting = false }: DateFormProps) {
+  const [name, setName] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [location, setLocation] = useState("");
+  const [dateType, setDateType] = useState("");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Partial<DateFormData>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Partial<DateFormData> = {};
-    if (!date) newErrors.date = "Please pick a date 💕";
-    if (!time) newErrors.time = "What time works? 🕒";
-    if (!location) newErrors.location = "Pick a spot! 📍";
+
+    if (!name.trim()) newErrors.name = "Please enter your name 💕";
+    if (!date.trim()) newErrors.date = "Please choose a date 💕";
+    if (!time.trim()) newErrors.time = "Please choose a time 🕒";
+    if (!dateType.trim()) newErrors.dateType = "Please choose a date type 💌";
+    if (!message.trim()) newErrors.message = "Please leave a message 💕";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -37,7 +42,7 @@ export default function DateForm({ visible, onSubmit, isSubmitting = false }: Da
     }
 
     setErrors({});
-    onSubmit({ date, time, location, message });
+    onSubmit({ name, date, time, dateType, message });
   };
 
   return (
@@ -72,11 +77,41 @@ export default function DateForm({ visible, onSubmit, isSubmitting = false }: Da
             </motion.div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Name */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.45 }}
+              >
+                <label className="flex items-center gap-2 text-sm font-medium text-pink-600 mb-2">
+                  👤 Your Name
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Tell me your name..."
+                  required
+                  className="w-full px-4 py-3 rounded-xl bg-white/70 backdrop-blur-sm border-2 border-pink-100
+                           text-gray-700 focus:border-pink-400 transition-all duration-300
+                           placeholder:text-pink-300"
+                />
+                {errors.name && (
+                  <motion.p
+                    className="text-rose-400 text-xs mt-1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    {errors.name}
+                  </motion.p>
+                )}
+              </motion.div>
+
               {/* Date picker */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.55 }}
               >
                 <label className="flex items-center gap-2 text-sm font-medium text-pink-600 mb-2">
                   📅 Choose Date 
@@ -85,6 +120,7 @@ export default function DateForm({ visible, onSubmit, isSubmitting = false }: Da
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
+                  required
                   className="w-full px-4 py-3 rounded-xl bg-white/70 backdrop-blur-sm border-2 border-pink-100
                            text-gray-700 focus:border-pink-400 transition-all duration-300"
                 />
@@ -103,7 +139,7 @@ export default function DateForm({ visible, onSubmit, isSubmitting = false }: Da
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 }}
+                transition={{ delay: 0.65 }}
               >
                 <label className="flex items-center gap-2 text-sm font-medium text-pink-600 mb-2">
                   🕒 Choose Time
@@ -112,6 +148,7 @@ export default function DateForm({ visible, onSubmit, isSubmitting = false }: Da
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
+                  required
                   className="w-full px-4 py-3 rounded-xl bg-white/70 backdrop-blur-sm border-2 border-pink-100
                            text-gray-700 focus:border-pink-400 transition-all duration-300"
                 />
@@ -130,19 +167,19 @@ export default function DateForm({ visible, onSubmit, isSubmitting = false }: Da
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.7 }}
+                transition={{ delay: 0.75 }}
               >
                 <label className="flex items-center gap-2 text-sm font-medium text-pink-600 mb-3">
                   📍 Choose Date Type
                 </label>
-                <LocationCards selected={location} onSelect={setLocation} />
-                {errors.location && (
+                <LocationCards selected={dateType} onSelect={setDateType} />
+                {errors.dateType && (
                   <motion.p
                     className="text-rose-400 text-xs mt-2"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                   >
-                    {errors.location}
+                    {errors.dateType}
                   </motion.p>
                 )}
               </motion.div>
@@ -151,7 +188,7 @@ export default function DateForm({ visible, onSubmit, isSubmitting = false }: Da
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.8 }}
+                transition={{ delay: 0.85 }}
               >
                 <label className="flex items-center gap-2 text-sm font-medium text-pink-600 mb-2">
                   💌 Leave Me A Cute Message
@@ -161,6 +198,7 @@ export default function DateForm({ visible, onSubmit, isSubmitting = false }: Da
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Write Location and a cute message... 💕"
                   rows={3}
+                  required
                   className="w-full px-4 py-3 rounded-xl bg-white/70 backdrop-blur-sm border-2 border-pink-100
                            text-gray-700 focus:border-pink-400 transition-all duration-300 resize-none
                            placeholder:text-pink-300"
@@ -171,7 +209,7 @@ export default function DateForm({ visible, onSubmit, isSubmitting = false }: Da
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
+                transition={{ delay: 0.95 }}
                 className="pt-2"
               >
                 <motion.button
